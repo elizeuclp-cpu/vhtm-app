@@ -935,4 +935,646 @@ if calcular:
                     coeficiente_vento,
                 alfa_maximo=
                     alfa_maximo,
-      
+                passo_angular=
+                    passo_angular
+            )
+        )
+
+        # ==================================================
+        # RESULTADOS PRINCIPAIS
+        # ==================================================
+
+        st.markdown("---")
+
+        st.subheader(
+            "📊 Resultados da Hipótese 1"
+        )
+
+        resultado1, resultado2, resultado3, resultado4 = (
+            st.columns(4)
+        )
+
+        with resultado1:
+
+            st.metric(
+                "Tração transformada do condutor",
+                (
+                    f"{formatar_numero(T_vento_condutor)} kgf"
+                ),
+                (
+                    f"EDS: "
+                    f"{formatar_numero(T_eds_condutor)} kgf"
+                )
+            )
+
+        with resultado2:
+
+            st.metric(
+                "Vão gravante máximo",
+                (
+                    f"{formatar_numero(vao_gravante_maximo)} m"
+                )
+            )
+
+        with resultado3:
+
+            st.metric(
+                "Alfa máximo teórico",
+                (
+                    f"{formatar_numero(alfa_maximo, 2)}°"
+                ),
+                "Vão de vento = 0 m"
+            )
+
+        with resultado4:
+
+            st.metric(
+                "Limite do gráfico",
+                (
+                    f"{formatar_numero(alfa_limite_grafico, 2)}°"
+                ),
+                "Menor entre alfa máximo e 60°"
+            )
+
+        if possui_pr:
+
+            st.info(
+                f"Tração transformada do para-raios "
+                f"{nome_pr}: "
+                f"{formatar_numero(T_vento_pr)} kgf por cabo."
+            )
+
+        if alfa_maximo > 60.0:
+
+            st.info(
+                "ℹ️ O alfa máximo teórico é superior a 60°. "
+                "Conforme o critério definido, a tabela e o "
+                "gráfico foram limitados a 60°."
+            )
+
+        # ==================================================
+        # TABELA DAS TRAÇÕES
+        # ==================================================
+
+        st.markdown("---")
+
+        st.subheader(
+            "📋 Trações transformadas"
+        )
+
+        dados_tracoes = [
+            {
+                "Cabo": nome_condutor,
+                "Tipo": "Condutor",
+                "Quantidade": quantidade_condutores,
+                "Tração EDS por cabo (kgf)":
+                    T_eds_condutor,
+                "Tração com vento por cabo (kgf)":
+                    T_vento_condutor,
+                "Peso próprio (kgf/m)":
+                    cabo_condutor["peso"],
+                "Carga de vento linear (kgf/m)":
+                    carga_vento_linear_condutor,
+                "Peso composto (kgf/m)":
+                    peso_composto_condutor
+            }
+        ]
+
+        if possui_pr:
+
+            dados_tracoes.append(
+                {
+                    "Cabo": nome_pr,
+                    "Tipo": "Para-raios",
+                    "Quantidade": int(
+                        quantidade_pr
+                    ),
+                    "Tração EDS por cabo (kgf)":
+                        T_eds_pr,
+                    "Tração com vento por cabo (kgf)":
+                        T_vento_pr,
+                    "Peso próprio (kgf/m)":
+                        cabo_pr["peso"],
+                    "Carga de vento linear (kgf/m)":
+                        carga_vento_linear_pr,
+                    "Peso composto (kgf/m)":
+                        peso_composto_pr
+                }
+            )
+
+        df_tracoes = pd.DataFrame(
+            dados_tracoes
+        )
+
+        st.dataframe(
+            df_tracoes,
+            hide_index=True,
+            use_container_width=True,
+            column_config={
+                "Tração EDS por cabo (kgf)":
+                    st.column_config.NumberColumn(
+                        format="%.2f"
+                    ),
+
+                "Tração com vento por cabo (kgf)":
+                    st.column_config.NumberColumn(
+                        format="%.2f"
+                    ),
+
+                "Peso próprio (kgf/m)":
+                    st.column_config.NumberColumn(
+                        format="%.4f"
+                    ),
+
+                "Carga de vento linear (kgf/m)":
+                    st.column_config.NumberColumn(
+                        format="%.4f"
+                    ),
+
+                "Peso composto (kgf/m)":
+                    st.column_config.NumberColumn(
+                        format="%.4f"
+                    )
+            }
+        )
+
+        # ==================================================
+        # MEMÓRIA DE CÁLCULO
+        # ==================================================
+
+        st.markdown("---")
+
+        with st.expander(
+            "📐 Memória resumida de cálculo",
+            expanded=False
+        ):
+
+            parametros = [
+                {
+                    "Grandeza":
+                        "Quantidade total de condutores",
+                    "Valor":
+                        quantidade_condutores,
+                    "Unidade":
+                        "un"
+                },
+
+                {
+                    "Grandeza":
+                        "Quantidade de para-raios",
+                    "Valor":
+                        int(quantidade_pr),
+                    "Unidade":
+                        "un"
+                },
+
+                {
+                    "Grandeza":
+                        "Peso linear dos condutores",
+                    "Valor":
+                        peso_linear_condutores,
+                    "Unidade":
+                        "kgf/m"
+                },
+
+                {
+                    "Grandeza":
+                        "Peso linear dos para-raios",
+                    "Valor":
+                        peso_linear_para_raios,
+                    "Unidade":
+                        "kgf/m"
+                },
+
+                {
+                    "Grandeza":
+                        "Peso linear total",
+                    "Valor":
+                        peso_linear_total,
+                    "Unidade":
+                        "kgf/m"
+                },
+
+                {
+                    "Grandeza":
+                        "Soma dos diâmetros expostos",
+                    "Valor":
+                        soma_diametros,
+                    "Unidade":
+                        "m"
+                },
+
+                {
+                    "Grandeza":
+                        "Coeficiente de vento P × ΣD",
+                    "Valor":
+                        coeficiente_vento,
+                    "Unidade":
+                        "kgf/m"
+                },
+
+                {
+                    "Grandeza":
+                        "Soma das trações transformadas",
+                    "Valor":
+                        soma_tracoes_vento,
+                    "Unidade":
+                        "kgf"
+                },
+
+                {
+                    "Grandeza":
+                        "Capacidade vertical informada",
+                    "Valor":
+                        capacidade_vertical,
+                    "Unidade":
+                        "kgf"
+                },
+
+                {
+                    "Grandeza":
+                        "Capacidade vertical após FS",
+                    "Valor":
+                        capacidade_vertical_util,
+                    "Unidade":
+                        "kgf"
+                },
+
+                {
+                    "Grandeza":
+                        "Capacidade transversal informada",
+                    "Valor":
+                        capacidade_transversal,
+                    "Unidade":
+                        "kgf"
+                },
+
+                {
+                    "Grandeza":
+                        "Capacidade transversal após FS",
+                    "Valor":
+                        capacidade_transversal_util,
+                    "Unidade":
+                        "kgf"
+                },
+
+                {
+                    "Grandeza":
+                        "Pressão utilizada nos cálculos",
+                    "Valor":
+                        pressao_vento_projeto,
+                    "Unidade":
+                        "kgf/m²"
+                },
+
+                {
+                    "Grandeza":
+                        "Fator de segurança",
+                    "Valor":
+                        fator_seguranca,
+                    "Unidade":
+                        "-"
+                }
+            ]
+
+            df_parametros = pd.DataFrame(
+                parametros
+            )
+
+            st.dataframe(
+                df_parametros,
+                hide_index=True,
+                use_container_width=True,
+                column_config={
+                    "Valor":
+                        st.column_config.NumberColumn(
+                            format="%.4f"
+                        )
+                }
+            )
+
+            st.markdown(
+                "**Força transversal dos cabos:**"
+            )
+
+            st.latex(
+                r"""
+                F_{cabo}
+                =
+                2
+                \cdot
+                \sum T_{vento}
+                \cdot
+                \sin
+                \left(
+                \frac{\alpha}{2}
+                \right)
+                """
+            )
+
+            st.markdown(
+                "**Força de vento nos cabos:**"
+            )
+
+            st.latex(
+                r"""
+                F_{vento}
+                =
+                P
+                \cdot
+                \sum D
+                \cdot
+                VV
+                """
+            )
+
+            st.markdown(
+                "**Vão de vento máximo:**"
+            )
+
+            st.latex(
+                r"""
+                VV_{max}
+                =
+                \frac{
+                T_{transversal,\ util}
+                -
+                F_{cabo}
+                }{
+                P
+                \cdot
+                \sum D
+                }
+                """
+            )
+
+            st.markdown(
+                "**Vão gravante máximo:**"
+            )
+
+            st.latex(
+                r"""
+                VG_{max}
+                =
+                \frac{
+                V_{vertical,\ util}
+                }{
+                \sum peso_{linear}
+                }
+                """
+            )
+
+            st.markdown(
+                "**Alfa máximo, considerando VV = 0:**"
+            )
+
+            st.latex(
+                r"""
+                \alpha_{max}
+                =
+                2
+                \cdot
+                \arcsin
+                \left(
+                \frac{
+                T_{transversal,\ util}
+                }{
+                2
+                \cdot
+                \sum T_{vento}
+                }
+                \right)
+                """
+            )
+
+        # ==================================================
+        # GRÁFICO
+        # ==================================================
+
+        st.markdown("---")
+
+        st.subheader(
+            "📈 Curva do vão de vento máximo"
+        )
+
+        fig, ax = plt.subplots(
+            figsize=(
+                10,
+                5.5
+            )
+        )
+
+        mostrar_marcadores = (
+            len(
+                df_curva
+            )
+            <= 31
+        )
+
+        ax.plot(
+            df_curva[
+                "Deflexão (°)"
+            ],
+            df_curva[
+                "Vão de vento máximo (m)"
+            ],
+            marker=(
+                "o"
+                if mostrar_marcadores
+                else None
+            ),
+            linewidth=2,
+            color="blue"
+        )
+
+        ax.fill_between(
+            df_curva[
+                "Deflexão (°)"
+            ],
+            df_curva[
+                "Vão de vento máximo (m)"
+            ],
+            0,
+            alpha=0.12,
+            color="blue"
+        )
+
+        ax.set_title(
+            "Vão de vento máximo × deflexão",
+            fontsize=13,
+            fontweight="bold"
+        )
+
+        ax.set_xlabel(
+            "Deflexão externa (°)"
+        )
+
+        ax.set_ylabel(
+            "Vão de vento máximo (m)"
+        )
+
+        ax.set_xlim(
+            left=0,
+            right=max(
+                alfa_limite_grafico,
+                0.1
+            )
+        )
+
+        ax.set_ylim(
+            bottom=0
+        )
+
+        ax.grid(
+            True,
+            alpha=0.3
+        )
+
+        fig.tight_layout()
+
+        st.pyplot(
+            fig,
+            use_container_width=True
+        )
+
+        plt.close(
+            fig
+        )
+
+        # ==================================================
+        # TABELA POR DEFLEXÃO
+        # ==================================================
+
+        st.markdown("---")
+
+        st.subheader(
+            "📊 Tabela do vão de vento por deflexão"
+        )
+
+        st.dataframe(
+            df_curva,
+            hide_index=True,
+            use_container_width=True,
+            column_config={
+                "Deflexão (°)":
+                    st.column_config.NumberColumn(
+                        format="%.2f"
+                    ),
+
+                "Força dos cabos (kgf)":
+                    st.column_config.NumberColumn(
+                        format="%.2f"
+                    ),
+
+                "Capacidade disponível para vento (kgf)":
+                    st.column_config.NumberColumn(
+                        format="%.2f"
+                    ),
+
+                "Vão de vento máximo (m)":
+                    st.column_config.NumberColumn(
+                        format="%.2f"
+                    )
+            }
+        )
+
+        # ==================================================
+        # DOWNLOAD DA TABELA
+        # ==================================================
+
+        csv = (
+            df_curva
+            .to_csv(
+                index=False,
+                sep=";",
+                decimal=","
+            )
+            .encode(
+                "utf-8-sig"
+            )
+        )
+
+        st.download_button(
+            "📥 Baixar tabela em CSV",
+            data=csv,
+            file_name=(
+                "VHTM_hipotese_1_"
+                "vao_vento_deflexao.csv"
+            ),
+            mime="text/csv",
+            use_container_width=True
+        )
+
+        # ==================================================
+        # CONCLUSÃO
+        # ==================================================
+
+        st.markdown("---")
+
+        st.subheader(
+            "🎯 Conclusão"
+        )
+
+        coluna_conclusao1, coluna_conclusao2, coluna_conclusao3 = (
+            st.columns(3)
+        )
+
+        with coluna_conclusao1:
+
+            st.metric(
+                "Vão gravante máximo",
+                (
+                    f"{formatar_numero(vao_gravante_maximo)} m"
+                )
+            )
+
+        with coluna_conclusao2:
+
+            st.metric(
+                "Deflexão máxima teórica",
+                (
+                    f"{formatar_numero(alfa_maximo, 2)}°"
+                )
+            )
+
+        with coluna_conclusao3:
+
+            if (
+                pressao_vento_hipotese
+                >= pressao_vento_projeto
+            ):
+
+                st.metric(
+                    "Aplicação por pressão de vento",
+                    "ATENDE"
+                )
+
+            else:
+
+                st.metric(
+                    "Aplicação por pressão de vento",
+                    "NÃO ATENDE"
+                )
+
+    except Exception as erro:
+
+        st.error(
+            f"❌ Erro no cálculo: {erro}"
+        )
+
+        st.exception(
+            erro
+        )
+
+
+# ==========================================================
+# RODAPÉ
+# ==========================================================
+
+st.markdown("---")
+
+st.caption(
+    "Escopo desta versão: Hipótese 1 e verificação da capacidade "
+    "da mísula. As capacidades informadas devem ser compatíveis "
+    "com as unidades e com o critério estrutural adotado."
+)
